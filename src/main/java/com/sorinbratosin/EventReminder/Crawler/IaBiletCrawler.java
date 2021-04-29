@@ -67,9 +67,12 @@ public class IaBiletCrawler {
             String location = eventElement.select(".location .venue span").get(0).text();
             String description = eventElement.select(".main-info div").get(2).text();
             String city = eventElement.select(".location .venue span").get(1).text();
-            if(city.equals("Romania")) {
+            if(city.toLowerCase().equals("romania")) {
                 city = "N/A";
             }
+            Element link = eventElement.select("div.col-xs-3 > a").first();
+            String url = "iabilet.ro" + link.attr("href");
+            //LOG.info("The URL " + url);
 
             Event event = new Event();
 
@@ -84,6 +87,7 @@ public class IaBiletCrawler {
             event.setLocation(location);
             event.setDescription(description);
             event.setCity(city);
+            event.setUrl(url);
 
             events.add(event);
         }

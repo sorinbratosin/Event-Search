@@ -6,7 +6,7 @@
     <title>My application</title>
 </head>
 <body>
-<form action="/login" method="post" style="width : 400px; margin : auto;">
+<form action="/register-form" style="width : 400px; margin : auto;">
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
@@ -16,9 +16,12 @@
         <label for="exampleInputPassword1" class="form-label">Password</label>
         <input name="password" type="password" class="form-control" id="exampleInputPassword1">
     </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword2" class="form-label">Type password again</label>
+        <input name="rewritePassword" type="password" class="form-control" id="exampleInputPassword2">
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <a href="register">Register a new user</a>
-    <p th:text="${message}" style="color:red"></p>
+    <p th:text="${message}"></p>
 </form>
 </body>
 </html>

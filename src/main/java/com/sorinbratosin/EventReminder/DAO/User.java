@@ -1,16 +1,16 @@
 package com.sorinbratosin.EventReminder.DAO;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String email,password;
+
+    private String email, password;
 
     public int getId() {
         return id;
