@@ -64,6 +64,11 @@ public class IaBiletCrawler {
             String dateStartDay = eventElement.select(".date-start .date-day").text();
             String dateStartMonth = eventElement.select(".date-start .date-month").text();
             String dateStartYear = eventElement.select(".date-start .date-year").text().replace("'", "");
+
+            String dateEndDay = eventElement.select(".date-end .date-day").text();
+            String dateEndMonth = eventElement.select(".date-end .date-month").text();
+            String dateEndYear = eventElement.select(".date-end .date-year").text().replace("'", "");
+
             String location = eventElement.select(".location .venue span").get(0).text();
             String description = eventElement.select(".main-info div").get(2).text();
             String city = eventElement.select(".location .venue span").get(1).text();
@@ -76,14 +81,16 @@ public class IaBiletCrawler {
 
             Event event = new Event();
 
-            int year = LocalDate.now().getYear();
-            if(!dateStartYear.isEmpty()) {
-                year = Integer.parseInt(20 + dateStartYear);
-            }
-            LocalDate eventStartDate = LocalDate.of(year, monthToInt.get(dateStartMonth), Integer.parseInt(dateStartDay));
+            int startYear = convertYearIfNotEmpty(dateStartYear);
+            int endYear = convertYearIfNotEmpty(dateEndYear);
+
+            LocalDate eventStartDate = LocalDate.of(startYear, monthToInt.get(dateStartMonth), Integer.parseInt(dateStartDay));
+            LocalDate eventEndDate = LocalDate.of(endYear, monthToInt.get(dateEndMonth), Integer.parseInt(dateEndDay));
+            //todo - events that don't have an end date will have null day and month and will throw an exception
 
             event.setName(elementTitle.text());
             event.setDateStart(eventStartDate);
+            event.setDateEnd(eventEndDate);
             event.setLocation(location);
             event.setDescription(description);
             event.setCity(city);
@@ -104,5 +111,13 @@ public class IaBiletCrawler {
 
     public void setEventService(EventService eventService) {
         this.eventService = eventService;
+    }
+
+    private int convertYearIfNotEmpty(String year) {
+        int eventYear = LocalDate.now().getYear();
+        if(!year.isEmpty()) {
+            eventYear = Integer.parseInt(20 + year);
+        }
+        return eventYear;
     }
 }
