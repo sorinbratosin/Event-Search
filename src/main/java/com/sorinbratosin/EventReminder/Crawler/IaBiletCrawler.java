@@ -85,8 +85,12 @@ public class IaBiletCrawler {
             int endYear = convertYearIfNotEmpty(dateEndYear);
 
             LocalDate eventStartDate = LocalDate.of(startYear, monthToInt.get(dateStartMonth), Integer.parseInt(dateStartDay));
-            LocalDate eventEndDate = LocalDate.of(endYear, monthToInt.get(dateEndMonth), Integer.parseInt(dateEndDay));
-            //todo - events that don't have an end date will have null day and month and will throw an exception
+
+            LocalDate eventEndDate = null;
+
+            if(!dateEndMonth.isEmpty()) {
+                eventEndDate = LocalDate.of(endYear, monthToInt.get(dateEndMonth), Integer.parseInt(dateEndDay));
+            }
 
             event.setName(elementTitle.text());
             event.setDateStart(eventStartDate);
