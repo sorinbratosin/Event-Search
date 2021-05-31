@@ -6,6 +6,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +35,7 @@ public class IaBiletCrawler {
 
     @Autowired
     private EventService eventService;
+
 
     public IaBiletCrawler() {
         monthToInt.put("ian", 1);
@@ -55,7 +63,23 @@ public class IaBiletCrawler {
         LOG.info("Incep sa parsez fisierul html: " + html);
         List<Event> events = new ArrayList<>();
 
-        Document doc = Jsoup.connect(html).get();
+        System.setProperty("webdriver.chrome.driver", "D:\\IntelliJ projects\\Event-Reminder\\Event-Reminder\\src\\main\\resources\\res\\chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        options.addArguments("start-maximized");
+        options.addArguments("--window-size=1920,1080");
+        WebDriver driver = new ChromeDriver(options);
+        driver.get(html);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        driver.findElement(By.cssSelector(".btn-more-container a")).click();
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".btn-more-container a")));
+        String page = driver.getPageSource();
+        driver.quit();
+
+        //Document doc = Jsoup.connect(page).get();
+        Document doc = Jsoup.parse(page);
         Elements elements = doc.select(".event-list-item");
 
         for (Element eventElement : elements) {
@@ -75,9 +99,15 @@ public class IaBiletCrawler {
             if(city.toLowerCase().equals("romania")) {
                 city = "N/A";
             }
+            //get event URL
             Element link = eventElement.select("div.col-xs-3 > a").first();
             String url = "iabilet.ro" + link.attr("href");
             //LOG.info("The URL " + url);
+
+            String price = eventElement.select(".col-xs-2 .details .price").text();
+            if(price.isEmpty()) {
+                price = "N/A";
+            }
 
             Event event = new Event();
 
@@ -99,6 +129,7 @@ public class IaBiletCrawler {
             event.setDescription(description);
             event.setCity(city);
             event.setUrl(url);
+            event.setPrice(price);
 
             events.add(event);
         }
