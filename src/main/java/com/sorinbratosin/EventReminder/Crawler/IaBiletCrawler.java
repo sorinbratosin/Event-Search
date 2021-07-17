@@ -9,22 +9,17 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class IaBiletCrawler {
@@ -32,6 +27,7 @@ public class IaBiletCrawler {
     Logger LOG = LoggerFactory.getLogger(IaBiletCrawler.class);
 
     private Map<String, Integer> monthToInt = new HashMap<>();
+    private Map<String, String> eventsMap = new HashMap<>();
 
     @Autowired
     private EventService eventService;
@@ -50,16 +46,37 @@ public class IaBiletCrawler {
         monthToInt.put("oct", 10);
         monthToInt.put("nov", 11);
         monthToInt.put("dec", 12);
+
+        eventsMap.put("pop", "concerte-pop");
+        eventsMap.put("rock", "concerte-rock");
+        eventsMap.put("clasica", "concerte-muzica-clasica");
+        eventsMap.put("electronica", "concerte-electro");
+        eventsMap.put("metal", "concerte-metal");
+        eventsMap.put("hip-hop", "concerte-hip-hop");
+        eventsMap.put("pop-rock", "concerte-pop-rock");
+        eventsMap.put("jazz", "concerte-jazz");
+        eventsMap.put("folk", "concerte-folk");
+        eventsMap.put("populara", "concerte-populara");
+        eventsMap.put("reggae", "concerte-reggae");
+        eventsMap.put("fado", "concerte-fado");
+        eventsMap.put("conferinte", "conferinte");
+        eventsMap.put("teatru", "teatru");
+        eventsMap.put("teatru pentru copii", "teatru-pentru-copii");
+        eventsMap.put("stand-up", "stand-up-comedy");
+        eventsMap.put("festivaluri", "festivaluri");
     }
 
-    @Scheduled(fixedRate = 30000)
-    public void run() throws IOException {
+    @Scheduled(fixedRate = 1000000)
+    public void run() throws InterruptedException {
         LOG.info("A pornit IaBiletCrawler");
-        extract("https://www.iabilet.ro/bilete-concerte-rock/");
+        for (Map.Entry<String, String> entry : eventsMap.entrySet()) {
+            extract("https://www.iabilet.ro/bilete-" + entry.getValue());
+        }
+        //extract("https://www.iabilet.ro/bilete-concerte-rock/");
         LOG.info("S-a terminat IaBiletCrawler");
     }
 
-    public List<Event> extract(String html) throws IOException {
+    public List<Event> extract(String html) throws InterruptedException {
         LOG.info("Incep sa parsez fisierul html: " + html);
         List<Event> events = new ArrayList<>();
 
@@ -67,14 +84,25 @@ public class IaBiletCrawler {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("start-maximized");
-        options.addArguments("--window-size=1920,1080");
         WebDriver driver = new ChromeDriver(options);
         driver.get(html);
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
-        jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-        driver.findElement(By.cssSelector(".btn-more-container a")).click();
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".btn-more-container a")));
+
+        List<WebElement> button = driver.findElements(By.cssSelector(".btn-more-container a"));
+        int i = button.size();
+        for (int x = 0; x < i; x++) {
+            JavascriptExecutor jse = (JavascriptExecutor) driver;
+            jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+            driver.findElement(By.cssSelector(".btn-more-container a")).click();
+            /*WebDriverWait wait = new WebDriverWait(driver, 5);
+             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".btn-more-container a")));*/
+            Thread.sleep(2000);
+            jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+            List<WebElement> button2 = driver.findElements(By.cssSelector(".btn-more-container a"));
+            if (button2.size() == 1) {
+                i++;
+            }
+        }
+
         String page = driver.getPageSource();
         driver.quit();
 
@@ -96,16 +124,16 @@ public class IaBiletCrawler {
             String location = eventElement.select(".location .venue span").get(0).text();
             String description = eventElement.select(".main-info div").get(2).text();
             String city = eventElement.select(".location .venue span").get(1).text();
-            if(city.toLowerCase().equals("romania")) {
+            if (city.toLowerCase().equals("romania")) {
                 city = "N/A";
             }
             //get event URL
-            Element link = eventElement.select("div.col-xs-3 > a").first();
+            Element link = eventElement.select("div.col-xs-2 > a").first();
             String url = "iabilet.ro" + link.attr("href");
             //LOG.info("The URL " + url);
 
             String price = eventElement.select(".col-xs-2 .details .price").text();
-            if(price.isEmpty()) {
+            if (price.isEmpty()) {
                 price = "N/A";
             }
 
@@ -118,7 +146,7 @@ public class IaBiletCrawler {
 
             LocalDate eventEndDate = null;
 
-            if(!dateEndMonth.isEmpty()) {
+            if (!dateEndMonth.isEmpty()) {
                 eventEndDate = LocalDate.of(endYear, monthToInt.get(dateEndMonth), Integer.parseInt(dateEndDay));
             }
 
@@ -130,6 +158,30 @@ public class IaBiletCrawler {
             event.setCity(city);
             event.setUrl(url);
             event.setPrice(price);
+
+            String[] s = html.split("-");
+            String genre = "";
+
+            for (String j : eventsMap.keySet()) {
+                if (s[s.length - 2].equals("pop")) {
+                    genre = "pop rock";
+                } else if (s[s.length - 1].equals(j)) {
+                    genre = j;
+                } else if (s[s.length - 1].equals("electro")) {
+                    genre = "electronica";
+                } else if (s[s.length - 1].equals("hop")) {
+                    genre = "hip-hop";
+                } else if (s[s.length - 1].equals("copii")) {
+                    genre = "teatru pentru copii";
+                } else if (s[s.length - 1].equals("comedy")) {
+                    genre = "stand-up comedy";
+                }
+            }
+
+            //LOG.info("THE HTML BEFORE SPLIT: " + Arrays.toString(s));
+            //LOG.info("THE HTML AFTER SPLIT: " + Arrays.toString(s));
+
+            event.setGenre(genre);
 
             events.add(event);
         }
@@ -150,7 +202,7 @@ public class IaBiletCrawler {
 
     private int convertYearIfNotEmpty(String year) {
         int eventYear = LocalDate.now().getYear();
-        if(!year.isEmpty()) {
+        if (!year.isEmpty()) {
             eventYear = Integer.parseInt(20 + year);
         }
         return eventYear;

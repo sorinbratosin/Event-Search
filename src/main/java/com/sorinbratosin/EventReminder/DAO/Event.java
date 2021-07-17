@@ -19,6 +19,7 @@ public class Event {
     private LocalDate dateEnd;
     private String url;
     private String price;
+    private String genre;
 
     public int getId() {
         return id;
@@ -92,6 +93,14 @@ public class Event {
         this.price = price;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -104,6 +113,7 @@ public class Event {
                 ", dateEnd=" + dateEnd +
                 ", url='" + url + '\'' +
                 ", price='" + price + '\'' +
+                ", genre='" + genre + '\'' +
                 '}';
     }
 }
