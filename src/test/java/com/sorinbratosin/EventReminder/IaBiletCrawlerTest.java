@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 public class IaBiletCrawlerTest {
 
     @Test
-    public void testParsing() throws IOException {
+    public void testParsing() throws IOException, InterruptedException {
         IaBiletCrawler iaBiletCrawler = new IaBiletCrawler();
         EventService eventService = Mockito.mock(EventService.class);
         iaBiletCrawler.setEventService(eventService);
@@ -37,7 +37,7 @@ public class IaBiletCrawlerTest {
     }
 
     @Test
-    public void testParsingEventsAreNotDuplicateInTheDatabase() throws IOException {
+    public void testParsingEventsAreNotDuplicateInTheDatabase() throws IOException, InterruptedException {
         IaBiletCrawler iaBiletCrawler = new IaBiletCrawler();
         EventService eventService = Mockito.mock(EventService.class);
 
