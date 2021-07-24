@@ -129,7 +129,7 @@ public class IaBiletCrawler {
             }
             //get event URL
             Element link = eventElement.select("div.col-xs-2 > a").first();
-            String url = "iabilet.ro" + link.attr("href");
+            String url = "https://www.iabilet.ro" + link.attr("href");
             //LOG.info("The URL " + url);
 
             String price = eventElement.select(".col-xs-2 .details .price").text();
