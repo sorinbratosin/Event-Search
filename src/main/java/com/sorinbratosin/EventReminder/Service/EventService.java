@@ -5,8 +5,10 @@ import com.sorinbratosin.EventReminder.DAO.EventDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.text.Normalizer;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class EventService {
@@ -26,18 +28,49 @@ public class EventService {
         eventDAO.save(event);
     }
 
-    public List<Event> eventsByKeyWord(String keyword) {
-        List<Event> eventsByKeyWord = new ArrayList<>();
+    public Set<Event> eventsByKeyWord(String keyword) {
+        Set<Event> eventsByKeyWord = new HashSet<>();
         List<Event> allEvents = eventDAO.findAll();
 
         for(Event event : allEvents) {
-            String[] keywords = event.getName().split("-|:|\\s+");
-            for(String s : keywords) {
+            String[] keywordsFromTitle = event.getName().split("-|\\.|:|\\s+");
+            for(String s : keywordsFromTitle) {
+                s = removeDiacriticsFromString(s);
                 if(s.toLowerCase().equals(keyword.toLowerCase())) {
                     eventsByKeyWord.add(event);
                 }
             }
-        }
+
+            String[] keywordsFromLocation = event.getLocation().split("-|\\.|:|\\s+");
+            for(String s : keywordsFromLocation) {
+                s = removeDiacriticsFromString(s);
+                if(s.toLowerCase().equals(keyword.toLowerCase())) {
+                    eventsByKeyWord.add(event);
+                }
+            }
+
+            String[] keywordsFromCity = event.getCity().split("-|\\.|:|\\s+");
+            for(String s : keywordsFromCity) {
+                s = removeDiacriticsFromString(s);
+                if(s.toLowerCase().equals(keyword.toLowerCase())) {
+                    eventsByKeyWord.add(event);
+                }
+            }
+
+            String[] keywordsFromGenre = event.getGenre().split("-|\\.|:|\\s+");
+            for(String s : keywordsFromGenre) {
+                s = removeDiacriticsFromString(s);
+                if(s.toLowerCase().equals(keyword.toLowerCase())) {
+                    eventsByKeyWord.add(event);
+                }
+            }
+    }
         return eventsByKeyWord;
+    }
+
+    private String removeDiacriticsFromString(String string) {
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+        string = string.replaceAll("[^\\p{ASCII}]", "");
+        return string;
     }
 }
