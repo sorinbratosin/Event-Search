@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
@@ -56,14 +58,40 @@
 <body>
 
 <h1>Cauta dupa numele evenimentului: </h1>
-<form action="keywords" method="post">
+<form action="keywords" method="get">
     <input name="keyword">
-    <button>Salveaza</button>
+    <button>Cauta</button>
 </form>
-<div class="tags">
-    <p>
-        <a th:each="k : ${keyWords}" th:text="${k.keyword}"></a>
-    </p>
-</div>
+
+<table class="table table-dark table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Location</th>
+        <th scope="col">City</th>
+        <th scope="col">Date Start</th>
+        <th scope="col">Date End</th>
+        <th scope="col">Price</th>
+        <th scope="col">Genre</th>
+        <th scope="col">URL</th>
+    </tr>
+    </thead>
+    <tbody th:each="k : ${events}">
+    <tr>
+        <th scope="row"></th>
+        <td th:text="${k.name}"></td>
+        <td th:text="${k.location}"></td>
+        <td th:text="${k.city}"></td>
+        <td th:text="${k.dateStart}"></td>
+        <td th:text="${k.dateEnd}"></td>
+        <td th:text="${k.price}"></td>
+        <td th:text="${k.genre}"></td>
+        <td>
+        <a th:href="@{${k.url}}">Go to event</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

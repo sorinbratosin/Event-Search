@@ -2,6 +2,7 @@ package com.sorinbratosin.EventReminder.DAO;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "event")
@@ -12,7 +13,6 @@ public class Event {
     private int id;
 
     private String name;
-    private String description;
     private String location;
     private String city;
     private LocalDate dateStart;
@@ -35,14 +35,6 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getLocation() {
@@ -106,7 +98,6 @@ public class Event {
         return "Event{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", location='" + location + '\'' +
                 ", city='" + city + '\'' +
                 ", dateStart=" + dateStart +
