@@ -32,7 +32,6 @@ public class IaBiletCrawler {
     @Autowired
     private EventService eventService;
 
-
     public IaBiletCrawler() {
         monthToInt.put("ian", 1);
         monthToInt.put("feb", 2);
@@ -122,7 +121,6 @@ public class IaBiletCrawler {
             String dateEndYear = eventElement.select(".date-end .date-year").text().replace("'", "");
 
             String location = eventElement.select(".location .venue span").get(0).text();
-            String description = eventElement.select(".main-info div").get(2).text();
             String city = eventElement.select(".location .venue span").get(1).text();
             if (city.toLowerCase().equals("romania")) {
                 city = "N/A";
@@ -154,7 +152,6 @@ public class IaBiletCrawler {
             event.setDateStart(eventStartDate);
             event.setDateEnd(eventEndDate);
             event.setLocation(location);
-            event.setDescription(description);
             event.setCity(city);
             event.setUrl(url);
             event.setPrice(price);
@@ -182,6 +179,12 @@ public class IaBiletCrawler {
             //LOG.info("THE HTML AFTER SPLIT: " + Arrays.toString(s));
 
             event.setGenre(genre);
+
+            /*List<Keyword> keywordList = new ArrayList<>();
+            for(String str : keywords) {
+                keywordList.add(str);
+            }
+            event.setKeyword(keywords);*/
 
             events.add(event);
         }

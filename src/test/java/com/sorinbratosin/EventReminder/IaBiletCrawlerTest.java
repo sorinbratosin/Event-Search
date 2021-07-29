@@ -30,7 +30,6 @@ public class IaBiletCrawlerTest {
         assertEquals(events.size(), 24);
         assertEquals(events.get(0).getName(), "KUMM live | concert aniversar Different Parties - 15 ani");
         assertEquals(events.get(0).getDateStart(), LocalDate.of(2021,3,19));
-        assertEquals(events.get(0).getDescription(), "Tuturor ne este dor de concerte, de experiența muzicii live, de schimbul de energie dintre scenă și public. Așa că am readus pe scenă cele mai…");
         assertEquals(events.get(0).getLocation(), "Online");
         assertEquals(events.get(0).getCity(), "N/A");
 
