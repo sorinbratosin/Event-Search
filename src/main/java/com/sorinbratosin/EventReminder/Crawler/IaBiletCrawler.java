@@ -65,7 +65,7 @@ public class IaBiletCrawler {
         eventsMap.put("festivaluri", "festivaluri");
     }
 
-    @Scheduled(fixedRate = 1000000)
+    //@Scheduled(fixedRate = 1000000)
     public void run() throws InterruptedException {
         LOG.info("A pornit IaBiletCrawler");
         for (Map.Entry<String, String> entry : eventsMap.entrySet()) {

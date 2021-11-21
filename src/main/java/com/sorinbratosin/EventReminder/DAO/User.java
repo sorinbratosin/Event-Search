@@ -1,6 +1,7 @@
 package com.sorinbratosin.EventReminder.DAO;
 
 import javax.persistence.*;
+import java.util.Arrays;
 
 @Entity
 @Table(name = "users")
@@ -10,7 +11,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String email, password;
+    private String email, hashed;
+    private byte[] salt;
 
     public int getId() {
         return id;
@@ -28,12 +30,20 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHashed() {
+        return hashed;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashed(String hashed) {
+        this.hashed = hashed;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 
     @Override
@@ -41,7 +51,8 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                ", hashed='" + hashed + '\'' +
+                ", salt=" + Arrays.toString(salt) +
                 '}';
     }
 }
