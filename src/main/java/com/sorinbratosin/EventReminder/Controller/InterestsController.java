@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
+
 @Controller
 public class InterestsController {
 
@@ -25,16 +27,14 @@ public class InterestsController {
             return new ModelAndView("redirect:index.html");
         }
 
-        ModelAndView modelAndView = new ModelAndView("dashboard");
-        return modelAndView;
+        return new ModelAndView("dashboard");
     }
 
     @GetMapping("/keywords")
-    public ModelAndView saveNewKeyword(@RequestParam("keyword") String keyword) {
+    public ModelAndView searchKeyword(@RequestParam("keyword") String keyword) {
         ModelAndView modelAndView = new ModelAndView("dashboard");
 
-        Iterable<Event> events = eventService.eventsByKeyWord(keyword);
-
+        List<Event> events = eventService.findByLocationContainingOrCityContainingOrNameContainingOrGenreContaining(keyword);
         modelAndView.addObject("events", events);
 
         return modelAndView;
