@@ -1,2 +1,2 @@
-# Event-Reminder
+# Event-Search
 A web crawler that copies the events from iabilet.ro, using CSS selectors, selenium and Jsoup, and stores them in a MySQL database. There is a login/register system that uses Salt and SHA-256 encryption. After the user logs in, he can search for events using keywords and the results are displayed in a table.The language used for this project was Java, along with HTML, CSS and some frameworks like Spring Boot, Spring Data JPA, Selenium, Thymeleaf, Jsoup, Apache Commons Codec.
